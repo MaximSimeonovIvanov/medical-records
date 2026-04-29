@@ -68,7 +68,7 @@ public class DoctorService {
                 .uin(request.getUin())
                 .name(request.getName())
                 .specialty(request.getSpecialty())
-                .isGp(request.isGp())
+                .gp(request.isGp())
                 .build();
         Doctor savedDoctor = doctorRepository.save(doctor);
 

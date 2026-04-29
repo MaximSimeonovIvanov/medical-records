@@ -12,5 +12,5 @@ public class DoctorResponse {
     private String uin;
     private String name;
     private String specialty;
-    private boolean isGp;
+    private boolean gp;
 }

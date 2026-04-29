@@ -40,7 +40,7 @@ public class Doctor {
     private String specialty;
 
     @Column(name = "is_gp")
-    private boolean isGp;
+    private boolean gp;
 
     @OneToMany(mappedBy = "generalPractitioner")
     private List<Patient> patients;

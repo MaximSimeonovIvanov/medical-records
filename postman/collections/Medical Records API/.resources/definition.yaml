@@ -1,0 +1,4 @@
+$kind: collection
+name: Medical Records API
+variables:
+  baseUrl: ""

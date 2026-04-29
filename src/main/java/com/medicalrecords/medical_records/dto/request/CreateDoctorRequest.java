@@ -17,7 +17,7 @@ public class CreateDoctorRequest {
     @NotBlank(message = "Specialty is required")
     private String specialty;
 
-    private boolean isGp;
+    private boolean gp;
 
     @NotBlank(message = "Username is required")
     private String username;
