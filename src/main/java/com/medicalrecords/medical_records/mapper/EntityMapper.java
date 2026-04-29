@@ -5,7 +5,7 @@ import com.medicalrecords.medical_records.entity.*;
 import org.springframework.stereotype.Component;
 
 @Component
-//компонент казва на спринг да менажира класа така че да го инжектираме в сървисите с autowired
+//компонент казва на спринг да менажира класа така че да го инжектираме в сървисите
 public class EntityMapper {
 
     public DoctorResponse toDoctorResponse(Doctor doctor) {
