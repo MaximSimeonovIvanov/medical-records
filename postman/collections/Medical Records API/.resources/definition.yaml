@@ -3,3 +3,9 @@ name: Medical Records API
 variables:
   baseUrl: ""
   token: ""
+auth:
+  - id: edf270d1-6cb0-4aa9-a345-aa0525fafc51
+    type: bearer
+    name: Bearer Token
+    credentials:
+      token: "{{token}}"

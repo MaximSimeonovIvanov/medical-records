@@ -1,0 +1,25 @@
+$kind: http-request
+name: POST /api/auth/login
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "username": "admin",
+        "password": "admin123"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: beforeRequest
+    code: |-
+      const response = pm.response.json();
+      if (response.token) {
+          pm.collectionVariables.set("token", response.token);
+          console.log("Token saved successfully");
+      } else {
+          console.log("No token in response:", response);
+      }
+    language: text/javascript
+order: 1777544085092

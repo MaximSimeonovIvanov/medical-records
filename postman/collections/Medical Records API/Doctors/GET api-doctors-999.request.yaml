@@ -1,0 +1,12 @@
+$kind: http-request
+name: GET api/doctors/999
+url: "{{baseUrl}}/api/doctors/999"
+method: GET
+body:
+  type: json
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiUk9MRV9BRE1JTiIsInN1YiI6ImFkbWluIiwiaWF0IjoxNzc3NTQ0ODQ1LCJleHAiOjE3Nzc2MzEyNDV9.1TQSdSWcESLbSA_ERVyem0DXV-My3XQcTEA0_MMj-M7S_dSEaVcUFx-Id68YfuHx
+order: 1777544988627

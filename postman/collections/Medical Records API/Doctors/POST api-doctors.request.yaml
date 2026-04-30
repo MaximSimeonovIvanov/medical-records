@@ -1,0 +1,5 @@
+$kind: http-request
+name: POST api/doctors
+url: "{{baseUrl}}/api/doctors"
+method: POST
+order: 3270986000537955
