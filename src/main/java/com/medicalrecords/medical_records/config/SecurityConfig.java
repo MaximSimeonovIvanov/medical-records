@@ -41,6 +41,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/diagnoses/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                                 .requestMatchers("/api/visits/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                                 .requestMatchers("/api/sick-leaves/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
+                                .requestMatchers("/api/statistics/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
 
                                 .anyRequest().authenticated()
                         //вс останало изисква автентикация
