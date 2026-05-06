@@ -5,11 +5,14 @@ import com.medicalrecords.medical_records.dto.response.DoctorResponse;
 import com.medicalrecords.medical_records.entity.Doctor;
 import com.medicalrecords.medical_records.entity.Role;
 import com.medicalrecords.medical_records.entity.User;
+import com.medicalrecords.medical_records.entity.Visit;
 import com.medicalrecords.medical_records.exception.DuplicateResourceException;
 import com.medicalrecords.medical_records.exception.ResourceNotFoundException;
 import com.medicalrecords.medical_records.mapper.EntityMapper;
 import com.medicalrecords.medical_records.repository.DoctorRepository;
 import com.medicalrecords.medical_records.repository.UserRepository;
+import com.medicalrecords.medical_records.repository.VisitRepository;
+import com.medicalrecords.medical_records.repository.SickLeaveRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,8 @@ public class DoctorService {
 
     private final DoctorRepository doctorRepository;
     private final UserRepository userRepository;
+    private final SickLeaveRepository sickLeaveRepository;
+    private final VisitRepository visitRepository;
     private final EntityMapper mapper;
     private final PasswordEncoder passwordEncoder;
     //constructor injection
@@ -102,6 +107,27 @@ public class DoctorService {
             throw new ResourceNotFoundException(
                     "Doctor with id " + id + " not found");
         }
+
+        //първо трия болнични свързани с посещ при лекаря
+        List<Visit> visits = visitRepository.findByDoctorId(id);
+        for (Visit visit : visits) {
+            sickLeaveRepository.findAll()
+                    .stream()
+                    .filter(sl -> sl.getVisit().getId().equals(visit.getId()))
+                    .forEach(sickLeaveRepository::delete);
+        }
+
+        //после посещ
+        visitRepository.deleteAll(visits);
+
+        //после свързнаи порт ак
+        userRepository.findAll()
+                .stream()
+                .filter(u -> u.getDoctor() != null
+                        && u.getDoctor().getId().equals(id))
+                .forEach(userRepository::delete);
+
+        //накрая лекаря
         doctorRepository.deleteById(id);
     }
 }

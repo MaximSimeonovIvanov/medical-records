@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Patients')}"></head>
+<body>
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="container">
+  <div class="card">
+    <h2>Patients</h2>
+
+    <a sec:authorize="hasRole('ADMIN')"
+       th:href="@{/patients/new}"
+       class="btn btn-success"
+       style="margin-bottom: 1rem">+ Add Patient</a>
+
+    <table>
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>EGN</th>
+        <th>Health Insured</th>
+        <th>General Practitioner</th>
+        <th sec:authorize="hasRole('ADMIN')">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="patient : ${patients}">
+        <td th:text="${patient.name}"></td>
+        <td th:text="${patient.egn}"></td>
+        <td>
+                        <span th:if="${patient.healthInsured}"
+                              class="badge badge-success">Insured</span>
+          <span th:unless="${patient.healthInsured}"
+                class="badge badge-danger">Not Insured</span>
+        </td>
+        <td th:text="${patient.generalPractitionerName}"></td>
+        <td sec:authorize="hasRole('ADMIN')">
+          <a th:href="@{/patients/{id}/edit(id=${patient.id})}"
+             class="btn btn-warning">Edit</a>
+          <form th:action="@{/patients/{id}/delete(id=${patient.id})}"
+                method="post"
+                style="display: inline">
+            <button type="submit"
+                    class="btn btn-danger"
+                    onclick="return confirm('Delete this patient?')">
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>
