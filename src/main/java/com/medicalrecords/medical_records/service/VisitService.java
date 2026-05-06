@@ -119,6 +119,37 @@ public class VisitService {
     }
 
     @Transactional
+    public VisitResponse createVisitForDoctor(
+            CreateVisitRequest request, Long doctorId) {
+
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Doctor with id " + doctorId + " not found"));
+
+        Patient patient = patientRepository.findById(request.getPatientId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Patient with id " + request.getPatientId() + " not found"));
+
+        Diagnosis diagnosis = diagnosisRepository.findById(request.getDiagnosisId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Diagnosis with id " + request.getDiagnosisId() + " not found"));
+
+        boolean paidByNhif = patient.isHealthInsured();
+
+        Visit visit = Visit.builder()
+                .date(request.getDate())
+                .doctor(doctor)
+                .patient(patient)
+                .diagnosis(diagnosis)
+                .treatment(request.getTreatment())
+                .price(request.getPrice())
+                .paidByNhif(paidByNhif)
+                .build();
+
+        return mapper.toVisitResponse(visitRepository.save(visit));
+    }
+
+    @Transactional
     public void deleteVisit(Long id) {
         if (!visitRepository.existsById(id)) {
             throw new ResourceNotFoundException(

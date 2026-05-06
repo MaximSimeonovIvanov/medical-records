@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Visits')}"></head>
+<body>
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="card">
+        <h2>Visits</h2>
+
+        <a sec:authorize="hasAnyRole('ADMIN', 'DOCTOR')"
+           th:href="@{/visits/new}"
+           class="btn btn-success"
+           style="margin-bottom: 1rem">+ Add Visit</a>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Diagnosis</th>
+                <th>Treatment</th>
+                <th>Price</th>
+                <th>Paid By</th>
+                <th sec:authorize="hasAnyRole('ADMIN', 'DOCTOR')">
+                    Actions
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="visit : ${visits}">
+                <td th:text="${visit.date}"></td>
+                <td th:text="${visit.patientName}"></td>
+                <td th:text="${visit.doctorName}"></td>
+                <td th:text="${visit.diagnosisName}"></td>
+                <td th:text="${visit.treatment}"></td>
+                <td th:text="${visit.price} + ' BGN'"></td>
+                <td>
+                        <span th:if="${visit.paidByNhif}"
+                              class="badge badge-success">NHIF</span>
+                    <span th:unless="${visit.paidByNhif}"
+                          class="badge badge-danger">Patient</span>
+                </td>
+                <td sec:authorize="hasAnyRole('ADMIN', 'DOCTOR')">
+                    <a th:href="@{/visits/{id}/edit(id=${visit.id})}"
+                       class="btn btn-warning">Edit</a>
+                    <form th:action="@{/visits/{id}/delete(id=${visit.id})}"
+                          method="post"
+                          style="display: inline">
+                        <button type="submit"
+                                class="btn btn-danger"
+                                onclick="return confirm('Delete this visit?')">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
