@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Admin Panel')}"></head>
+<body>
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="container">
+  <h1 style="margin-bottom: 1.5rem">Admin Panel</h1>
+
+  <!--overview na sistemata-->
+  <div class="card" style="margin-bottom: 1rem">
+    <h2>System Overview</h2>
+    <div class="stats-grid" style="margin-top: 1rem">
+      <div class="stat-card">
+        <h3 th:text="${totalUsers}">0</h3>
+        <p>Total Users</p>
+      </div>
+      <div class="stat-card">
+        <h3 th:text="${totalDoctors}">0</h3>
+        <p>Total Doctors</p>
+      </div>
+      <div class="stat-card">
+        <h3 th:text="${totalPatients}">0</h3>
+        <p>Total Patients</p>
+      </div>
+      <div class="stat-card">
+        <h3 th:text="${totalVisits}">0</h3>
+        <p>Total Visits</p>
+      </div>
+      <div class="stat-card">
+        <h3 th:text="${totalSickLeaves}">0</h3>
+        <p>Total Sick Leaves</p>
+      </div>
+    </div>
+  </div>
+
+  <!--бързи линкове-->
+  <div class="card" style="margin-bottom: 1rem">
+    <h2>Quick Actions</h2>
+    <div style="display: flex; gap: 1rem;
+                    flex-wrap: wrap; margin-top: 1rem">
+      <a th:href="@{/doctors/new}"
+         class="btn btn-success">+ Add Doctor</a>
+      <a th:href="@{/patients/new}"
+         class="btn btn-success">+ Add Patient</a>
+      <a th:href="@{/diagnoses/new}"
+         class="btn btn-success">+ Add Diagnosis</a>
+      <a th:href="@{/visits/new}"
+         class="btn btn-success">+ Add Visit</a>
+      <a th:href="@{/sick-leaves/new}"
+         class="btn btn-success">+ Add Sick Leave</a>
+      <a th:href="@{/statistics}"
+         class="btn btn-primary">View Statistics</a>
+    </div>
+  </div>
+
+  <!--управление на порт-->
+  <div class="card">
+    <h2>User Management</h2>
+    <p style="color: #666; margin-bottom: 1rem">
+      All registered users in the system
+    </p>
+
+    <table>
+      <thead>
+      <tr>
+        <th>Username</th>
+        <th>Role</th>
+        <th>Linked To</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="user : ${users}">
+        <td th:text="${user.username}"></td>
+        <td>
+                        <span th:if="${user.role.name() == 'ADMIN'}"
+                              class="badge badge-info">ADMIN</span>
+          <span th:if="${user.role.name() == 'DOCTOR'}"
+                class="badge badge-success">DOCTOR</span>
+          <span th:if="${user.role.name() == 'PATIENT'}"
+                class="badge badge-info">PATIENT</span>
+        </td>
+        <td>
+          <!--показвам към кое ентити е свръзан потребителя-->
+          <span th:if="${user.doctor != null}"
+                th:text="'Doctor: ' + ${user.doctor.name}">
+                        </span>
+          <span th:if="${user.patient != null}"
+                th:text="'Patient: ' + ${user.patient.name}">
+                        </span>
+          <span th:if="${user.doctor == null
+                                    and user.patient == null}"
+                style="color: #999">System Admin</span>
+        </td>
+        <td>
+          <!--не може да се изтрие самия админ-->
+          <form th:if="${user.role.name() != 'ADMIN'}"
+                th:action="@{/admin/users/{id}/delete(id=${user.id})}"
+                method="post"
+                style="display: inline">
+            <button type="submit"
+                    class="btn btn-danger"
+                    onclick="return confirm('Delete this user?')">
+              Delete
+            </button>
+          </form>
+          <span th:if="${user.role.name() == 'ADMIN'}"
+                style="color: #999">Protected</span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>
