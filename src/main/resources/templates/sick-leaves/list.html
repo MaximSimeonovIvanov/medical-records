@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Sick Leaves')}"></head>
+<body>
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="container">
+  <div class="card">
+    <h2>Sick Leaves</h2>
+
+    <a sec:authorize="hasAnyRole('ADMIN', 'DOCTOR')"
+       th:href="@{/sick-leaves/new}"
+       class="btn btn-success"
+       style="margin-bottom: 1rem">+ Add Sick Leave</a>
+
+    <table>
+      <thead>
+      <tr>
+        <th>Start Date</th>
+        <th>Days</th>
+        <th>End Date</th>
+        <th>Patient</th>
+        <th>Doctor</th>
+        <th sec:authorize="hasAnyRole('ADMIN', 'DOCTOR')">
+          Actions
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="sl : ${sickLeaves}">
+        <td th:text="${sl.startDate}"></td>
+        <td th:text="${sl.numberOfDays}"></td>
+        <td th:text="${sl.startDate.plusDays(sl.numberOfDays)}">
+        </td>
+        <!-- Calculate end date directly in template -->
+        <td th:text="${sl.patientName}"></td>
+        <td th:text="${sl.doctorName}"></td>
+        <td sec:authorize="hasAnyRole('ADMIN', 'DOCTOR')">
+          <a th:href="@{/sick-leaves/{id}/edit(id=${sl.id})}"
+             class="btn btn-warning">Edit</a>
+          <form th:action="@{/sick-leaves/{id}/delete(id=${sl.id})}"
+                method="post"
+                style="display: inline">
+            <button type="submit"
+                    class="btn btn-danger"
+                    onclick="return confirm('Delete this sick leave?')">
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>
