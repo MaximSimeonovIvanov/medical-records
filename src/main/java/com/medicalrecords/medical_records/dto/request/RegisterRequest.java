@@ -1,6 +1,7 @@
 package com.medicalrecords.medical_records.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -20,5 +21,8 @@ public class RegisterRequest {
 
     @NotBlank(message = "EGN is required")
     private String egn;
-    //егн защото пациентите сами се регистрират. лекарите са от админа чрез др. ендпойнт
+    //егн защото пациентите сами се регистрират
+
+    @NotNull(message = "General practitioner is required")
+    private Long generalPractitionerId;
 }

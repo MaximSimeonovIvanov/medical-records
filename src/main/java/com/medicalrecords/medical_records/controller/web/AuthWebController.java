@@ -2,6 +2,7 @@ package com.medicalrecords.medical_records.controller.web;
 
 import com.medicalrecords.medical_records.dto.request.RegisterRequest;
 import com.medicalrecords.medical_records.service.AuthService;
+import com.medicalrecords.medical_records.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,12 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Controller
-//@controller returns HTML pages, @restcontroller returns JSON
+@Controller     //@controller returns HTML pages, @restcontroller returns JSON
 @RequiredArgsConstructor
 public class AuthWebController {
 
     private final AuthService authService;
+    private final DoctorService doctorService;
 
     @GetMapping("/")
     public String home() {
@@ -29,7 +30,8 @@ public class AuthWebController {
     }
 
     @GetMapping("/register")
-    public String registerPage() {
+    public String registerPage(Model model) {
+        model.addAttribute("gps", doctorService.getAllGPs());
         return "auth/register";
     }
 
@@ -39,6 +41,7 @@ public class AuthWebController {
             @RequestParam String password,
             @RequestParam String name,
             @RequestParam String egn,
+            @RequestParam Long generalPractitionerId,
             Model model) {
         try {
             RegisterRequest request = new RegisterRequest();
@@ -46,10 +49,12 @@ public class AuthWebController {
             request.setPassword(password);
             request.setName(name);
             request.setEgn(egn);
+            request.setGeneralPractitionerId(generalPractitionerId);
             authService.register(request);
             return "redirect:/login?registered=true";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
+            model.addAttribute("gps", doctorService.getAllGPs());
             return "auth/register";
         }
     }

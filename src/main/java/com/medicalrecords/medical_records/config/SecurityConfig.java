@@ -34,21 +34,21 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                        // Public pages — no login needed
+                        //публични страници
                         .requestMatchers("/", "/login", "/register",
                                 "/css/**", "/js/**", "/images/**").permitAll()
 
-                        // REST API endpoints — JWT auth
+                        //рест апи ендпойнтс-jwt auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
 
-                        // Thymeleaf pages — session auth
+                        //thymleaf pages-session auth
                         .requestMatchers("/doctors/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                         .requestMatchers("/patients/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                         .requestMatchers("/visits/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                         .requestMatchers("/diagnoses/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                         .requestMatchers("/sick-leaves/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
-                        .requestMatchers("/statistics/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
+                        .requestMatchers("/statistics/**").hasAnyRole("ADMIN", "DOCTOR")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
@@ -56,13 +56,13 @@ public class SecurityConfig {
 
                 .formLogin(form -> form
                         .loginPage("/login")
-                        // Our custom login page
+                        //custom login page
                         .loginProcessingUrl("/login")
-                        // Spring processes the form POST here
+                        //спринг обработва формата от POST тук
                         .defaultSuccessUrl("/dashboard", true)
-                        // After login → go to dashboard
+                        //след логин към дашборд
                         .failureUrl("/login?error=true")
-                        // Wrong credentials → back to login with error
+                        //при грешни данни обратно към логин грешка
                         .permitAll()
                 )
 
@@ -74,7 +74,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
 
-                // Keep JWT filter for REST API
+                //pazq jwt filter za rest api
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class);

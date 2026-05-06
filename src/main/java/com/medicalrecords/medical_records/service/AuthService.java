@@ -3,11 +3,13 @@ package com.medicalrecords.medical_records.service;
 import com.medicalrecords.medical_records.dto.request.LoginRequest;
 import com.medicalrecords.medical_records.dto.request.RegisterRequest;
 import com.medicalrecords.medical_records.dto.response.AuthResponse;
+import com.medicalrecords.medical_records.entity.Doctor;
 import com.medicalrecords.medical_records.entity.Patient;
 import com.medicalrecords.medical_records.entity.Role;
 import com.medicalrecords.medical_records.entity.User;
 import com.medicalrecords.medical_records.exception.DuplicateResourceException;
 import com.medicalrecords.medical_records.exception.ResourceNotFoundException;
+import com.medicalrecords.medical_records.repository.DoctorRepository;
 import com.medicalrecords.medical_records.repository.PatientRepository;
 import com.medicalrecords.medical_records.repository.UserRepository;
 import com.medicalrecords.medical_records.security.JwtService;
@@ -24,6 +26,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
+    private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -43,11 +46,25 @@ public class AuthService {
                             + " is already registered");
         }
 
+        //намирам избрания ЛЛ
+        Doctor gp = doctorRepository.findById(
+                        request.getGeneralPractitionerId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Doctor with id " + request.getGeneralPractitionerId()
+                                + " not found"));
+
+        //валидирам дали избраният е ЛЛ
+        if (!gp.isGp()) {
+            throw new IllegalArgumentException(
+                    "Selected doctor is not a general practitioner");
+        }
+
         //sazdavam patient entity
         Patient patient = Patient.builder()
                 .name(request.getName())
                 .egn(request.getEgn())
                 .healthInsured(false)
+                .generalPractitioner(gp)
                 .build();
         Patient savedPatient = patientRepository.save(patient);
 

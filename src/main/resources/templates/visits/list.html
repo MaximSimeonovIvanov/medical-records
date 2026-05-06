@@ -45,9 +45,15 @@
                           class="badge badge-danger">Patient</span>
                 </td>
                 <td sec:authorize="hasAnyRole('ADMIN', 'DOCTOR')">
-                    <a th:href="@{/visits/{id}/edit(id=${visit.id})}"
+                    <!--едит за админ винаги а за лекар само собствени-->
+                    <a th:if="${#authentication.principal.role.name() == 'ADMIN'
+               or visit.doctorName == #authentication.principal.doctor?.name}"
+                       th:href="@{/visits/{id}/edit(id=${visit.id})}"
                        class="btn btn-warning">Edit</a>
-                    <form th:action="@{/visits/{id}/delete(id=${visit.id})}"
+
+                    <!--изтриване само за админ-->
+                    <form sec:authorize="hasRole('ADMIN')"
+                          th:action="@{/visits/{id}/delete(id=${visit.id})}"
                           method="post"
                           style="display: inline">
                         <button type="submit"

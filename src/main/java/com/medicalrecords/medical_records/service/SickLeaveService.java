@@ -78,4 +78,11 @@ public class SickLeaveService {
         }
         sickLeaveRepository.deleteById(id);
     }
+
+    public List<SickLeaveResponse> getSickLeavesByDoctor(Long doctorId) {
+        return sickLeaveRepository.findByVisitDoctorId(doctorId)
+                .stream()
+                .map(mapper::toSickLeaveResponse)
+                .toList();
+    }
 }

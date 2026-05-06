@@ -1,9 +1,11 @@
 package com.medicalrecords.medical_records.controller.web;
 
 import com.medicalrecords.medical_records.dto.request.CreateSickLeaveRequest;
+import com.medicalrecords.medical_records.entity.User;
 import com.medicalrecords.medical_records.service.SickLeaveService;
 import com.medicalrecords.medical_records.service.VisitService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +19,22 @@ public class SickLeaveWebController {
     private final VisitService visitService;
 
     @GetMapping
-    public String listSickLeaves(Model model) {
-        model.addAttribute("sickLeaves",
-                sickLeaveService.getAllSickLeaves());
+    public String listSickLeaves(
+            @AuthenticationPrincipal User currentUser,
+            Model model) {
+
+        if (currentUser.getRole().name().equals("ADMIN")) {
+            model.addAttribute("sickLeaves",
+                    sickLeaveService.getAllSickLeaves());
+        } else if (currentUser.getRole().name().equals("DOCTOR")) {
+            model.addAttribute("sickLeaves",
+                    sickLeaveService.getSickLeavesByDoctor(
+                            currentUser.getDoctor().getId()));
+        } else {
+            model.addAttribute("sickLeaves",
+                    sickLeaveService.getSickLeavesByPatient(
+                            currentUser.getPatient().getId()));
+        }
         return "sick-leaves/list";
     }
 

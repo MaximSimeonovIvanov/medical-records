@@ -23,6 +23,18 @@
                        placeholder="10 digits" required>
             </div>
             <div class="form-group">
+                <label>General Practitioner</label>
+                <select name="generalPractitionerId"
+                        class="form-control" required>
+                    <option value="">-- Select your GP --</option>
+                    <option th:each="gp : ${gps}"
+                            th:value="${gp.id}"
+                            th:text="${gp.name} + ' - ' + ${gp.specialty}">
+                    </option>
+                </select>
+                <!--показвам име и спец. за да може пац да идентифицира лекаря си-->
+            </div>
+            <div class="form-group">
                 <label>Username</label>
                 <input type="text" name="username"
                        class="form-control" required>
