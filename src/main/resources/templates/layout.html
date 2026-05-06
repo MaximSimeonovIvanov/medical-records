@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Medical Records'">Medical Records</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!--navbar-вклюен на вс стр.-->
+<nav class="navbar" th:fragment="navbar">
+    <a class="navbar-brand" th:href="@{/dashboard}">Medical Records</a>
+    <div>
+        <!--показвам тези на всеки логнат вътре-->
+        <a th:href="@{/doctors}">Doctors</a>
+        <a th:href="@{/patients}">Patients</a>
+        <a th:href="@{/visits}">Visits</a>
+        <a th:href="@{/diagnoses}">Diagnoses</a>
+        <a th:href="@{/sick-leaves}">Sick Leaves</a>
+        <a th:href="@{/statistics}">Statistics</a>
+
+        <!--само за админа-->
+        <a sec:authorize="hasRole('ADMIN')"
+           th:href="@{/admin}"
+           style="color: #f39c12">Admin</a>
+
+        <!--показвам потр име и лог аут-->
+        <span sec:authentication="name"
+              style="color: #bdc3c7; margin-left: 1rem"></span>
+        <a th:href="@{/logout}"
+           style="color: #e74c3c">Logout</a>
+    </div>
+</nav>
+
+</body>
+</html>

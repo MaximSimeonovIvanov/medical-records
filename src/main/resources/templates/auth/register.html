@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Register')}"></head>
+<body>
+
+<div class="login-container">
+    <div class="card">
+        <h2>Register as Patient</h2>
+
+        <div th:if="${error}" class="alert alert-danger"
+             th:text="${error}"></div>
+
+        <form method="post" th:action="@{/register}">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name"
+                       class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>EGN</label>
+                <input type="text" name="egn"
+                       class="form-control"
+                       placeholder="10 digits" required>
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username"
+                       class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password"
+                       class="form-control" required>
+            </div>
+            <button type="submit"
+                    class="btn btn-success"
+                    style="width: 100%">Register</button>
+        </form>
+
+        <p style="margin-top: 1rem; text-align: center">
+            Already have an account?
+            <a th:href="@{/login}">Login</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

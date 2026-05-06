@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Dashboard')}"></head>
+<body>
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="container">
+    <h1 style="margin-bottom: 1.5rem">
+        Welcome, <span sec:authentication="name"></span>!
+    </h1>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3 th:text="${doctorCount}">0</h3>
+            <p>Doctors</p>
+        </div>
+        <div class="stat-card">
+            <h3 th:text="${patientCount}">0</h3>
+            <p>Patients</p>
+        </div>
+        <div class="stat-card">
+            <h3 th:text="${visitCount}">0</h3>
+            <p>Visits</p>
+        </div>
+        <div class="stat-card">
+            <h3 th:text="${sickLeaveCount}">0</h3>
+            <p>Sick Leaves</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Quick Actions</h2>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;
+                    margin-top: 1rem">
+            <a th:href="@{/doctors}"
+               class="btn btn-primary">View Doctors</a>
+            <a th:href="@{/patients}"
+               class="btn btn-primary">View Patients</a>
+            <a th:href="@{/visits}"
+               class="btn btn-primary">View Visits</a>
+            <a th:href="@{/statistics}"
+               class="btn btn-primary">Statistics</a>
+            <a sec:authorize="hasRole('ADMIN')"
+               th:href="@{/admin}"
+               class="btn btn-warning">Admin Panel</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

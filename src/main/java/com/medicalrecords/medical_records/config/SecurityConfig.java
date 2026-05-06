@@ -8,14 +8,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-//EnableMethodSecurity ми дава да ползвам PreAuthorize
+//позволява ми да ползвам PreAutherize
+
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -34,29 +34,50 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/auth/**").permitAll()
+                        // Public pages — no login needed
+                        .requestMatchers("/", "/login", "/register",
+                                "/css/**", "/js/**", "/images/**").permitAll()
 
-                                .requestMatchers("/api/doctors/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
-                                .requestMatchers("/api/patients/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
-                                .requestMatchers("/api/diagnoses/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
-                                .requestMatchers("/api/visits/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
-                                .requestMatchers("/api/sick-leaves/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
-                                .requestMatchers("/api/statistics/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
+                        // REST API endpoints — JWT auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/**").authenticated()
 
-                                .anyRequest().authenticated()
-                        //вс останало изисква автентикация
+                        // Thymeleaf pages — session auth
+                        .requestMatchers("/doctors/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
+                        .requestMatchers("/patients/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
+                        .requestMatchers("/visits/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
+                        .requestMatchers("/diagnoses/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
+                        .requestMatchers("/sick-leaves/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
+                        .requestMatchers("/statistics/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        .anyRequest().authenticated()
                 )
 
-                .sessionManagement(session -> session
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                        //сървърът не помни нищо = РЕСТ
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        // Our custom login page
+                        .loginProcessingUrl("/login")
+                        // Spring processes the form POST here
+                        .defaultSuccessUrl("/dashboard", true)
+                        // After login → go to dashboard
+                        .failureUrl("/login?error=true")
+                        // Wrong credentials → back to login with error
+                        .permitAll()
                 )
 
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .permitAll()
+                )
+
+                // Keep JWT filter for REST API
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class);
-        //първо добавям jwt filter преди дефолтния логин филтър на спринг
-        //за да проверя първо jwt на всеки рекуест
 
         return http.build();
     }
