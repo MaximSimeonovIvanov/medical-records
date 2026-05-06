@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Statistics')}"></head>
+<body>
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="container">
+  <h1 style="margin-bottom: 1.5rem">Statistics & Reports</h1>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3 th:text="${totalPaidByPatients} + ' BGN'">0</h3>
+      <p>Total Paid by Patients</p>
+    </div>
+    <div class="stat-card"
+         th:if="${mostCommonDiagnosis != null}">
+      <h3 th:text="${mostCommonDiagnosis.diagnosisName}">-</h3>
+      <p>Most Common Diagnosis
+        (<span th:text="${mostCommonDiagnosis.count}"></span> cases)
+      </p>
+    </div>
+    <div class="stat-card"
+         th:if="${monthWithMostSickLeaves != null}">
+      <h3 th:text="${monthWithMostSickLeaves.monthName}">-</h3>
+      <p>Month with Most Sick Leaves
+        (<span th:text="${monthWithMostSickLeaves.year}"></span>)
+      </p>
+    </div>
+  </div>
+
+  <div style="display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                margin-bottom: 1rem">
+
+    <!--br poseshtenia na lekar-->
+    <div class="card">
+      <h2>Visits per Doctor</h2>
+      <table>
+        <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Visits</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="stat : ${visitCountPerDoctor}">
+          <td th:text="${stat.doctorName}"></td>
+          <td th:text="${stat.count}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!--бр пац на ЛЛ-->
+    <div class="card">
+      <h2>Patients per GP</h2>
+      <table>
+        <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Patients</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="stat : ${patientCountPerGP}">
+          <td th:text="${stat.doctorName}"></td>
+          <td th:text="${stat.count}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!--финанси и диагнози-->
+  <div style="display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                margin-bottom: 1rem">
+
+    <!--платени от пац при даден лекар-->
+    <div class="card">
+      <h2>Revenue per Doctor</h2>
+      <table>
+        <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Amount (BGN)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="stat : ${paidPerDoctor}">
+          <td th:text="${stat.doctorName}"></td>
+          <td th:text="${stat.totalAmount}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!--честота на диагноза-->
+    <div class="card">
+      <h2>Diagnosis Frequency</h2>
+      <table>
+        <thead>
+        <tr>
+          <th>Diagnosis</th>
+          <th>Cases</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="stat : ${diagnosisFrequency}">
+          <td th:text="${stat.diagnosisName}"></td>
+          <td th:text="${stat.count}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!--лекар с най мн болнични-->
+  <div class="card" style="margin-bottom: 1rem">
+    <h2>Doctor(s) with Most Sick Leaves</h2>
+    <table>
+      <thead>
+      <tr>
+        <th>Doctor</th>
+        <th>Sick Leaves Issued</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="stat : ${doctorsWithMostSickLeaves}">
+        <td th:text="${stat.doctorName}"></td>
+        <td th:text="${stat.count}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!--филтрирам пациент по диагноза-->
+  <div class="card" style="margin-bottom: 1rem">
+    <h2>Patients by Diagnosis</h2>
+    <form method="get" th:action="@{/statistics}"
+          style="display: flex; gap: 1rem;
+                     align-items: center; margin-bottom: 1rem">
+      <select name="diagnosisId" class="form-control"
+              style="max-width: 300px">
+        <option value="">-- Select Diagnosis --</option>
+        <option th:each="d : ${allDiagnoses}"
+                th:value="${d.id}"
+                th:text="${d.name}"
+                th:selected="${selectedDiagnosisId == d.id}">
+        </option>
+      </select>
+      <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <div th:if="${patientsByDiagnosis != null}">
+      <table>
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>EGN</th>
+          <th>Health Insured</th>
+          <th>GP</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${patientsByDiagnosis}">
+          <td th:text="${p.name}"></td>
+          <td th:text="${p.egn}"></td>
+          <td>
+                            <span th:if="${p.healthInsured}"
+                                  class="badge badge-success">Yes</span>
+            <span th:unless="${p.healthInsured}"
+                  class="badge badge-danger">No</span>
+          </td>
+          <td th:text="${p.generalPractitionerName}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!--пациент по ЛЛ-->
+  <div class="card" style="margin-bottom: 1rem">
+    <h2>Patients by GP</h2>
+    <form method="get" th:action="@{/statistics}"
+          style="display: flex; gap: 1rem;
+                     align-items: center; margin-bottom: 1rem">
+      <select name="gpId" class="form-control"
+              style="max-width: 300px">
+        <option value="">-- Select GP --</option>
+        <option th:each="gp : ${allGPs}"
+                th:value="${gp.id}"
+                th:text="${gp.name}"
+                th:selected="${selectedGpId == gp.id}">
+        </option>
+      </select>
+      <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <div th:if="${patientsByGP != null}">
+      <table>
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>EGN</th>
+          <th>Health Insured</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${patientsByGP}">
+          <td th:text="${p.name}"></td>
+          <td th:text="${p.egn}"></td>
+          <td>
+                            <span th:if="${p.healthInsured}"
+                                  class="badge badge-success">Yes</span>
+            <span th:unless="${p.healthInsured}"
+                  class="badge badge-danger">No</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!--история на пациента-->
+  <div class="card">
+    <h2>Patient Visit History</h2>
+    <form method="get" th:action="@{/statistics}"
+          style="display: flex; gap: 1rem;
+                     align-items: center; margin-bottom: 1rem">
+      <select name="patientId" class="form-control"
+              style="max-width: 300px">
+        <option value="">-- Select Patient --</option>
+        <option th:each="p : ${allPatients}"
+                th:value="${p.id}"
+                th:text="${p.name}"
+                th:selected="${selectedPatientId == p.id}">
+        </option>
+      </select>
+      <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <div th:if="${patientHistory != null}">
+      <table>
+        <thead>
+        <tr>
+          <th>Date</th>
+          <th>Doctor</th>
+          <th>Diagnosis</th>
+          <th>Treatment</th>
+          <th>Price</th>
+          <th>Paid By</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="v : ${patientHistory}">
+          <td th:text="${v.date}"></td>
+          <td th:text="${v.doctorName}"></td>
+          <td th:text="${v.diagnosisName}"></td>
+          <td th:text="${v.treatment}"></td>
+          <td th:text="${v.price} + ' BGN'"></td>
+          <td>
+                            <span th:if="${v.paidByNhif}"
+                                  class="badge badge-success">NHIF</span>
+            <span th:unless="${v.paidByNhif}"
+                  class="badge badge-danger">Patient</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
