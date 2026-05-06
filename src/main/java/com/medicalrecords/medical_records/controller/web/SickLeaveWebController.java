@@ -39,13 +39,20 @@ public class SickLeaveWebController {
     }
 
     @GetMapping("/new")
-    public String newSickLeaveForm(Model model) {
-        model.addAttribute("sickLeave",
-                new CreateSickLeaveRequest());
-        model.addAttribute("visits",
-                visitService.getAllVisits());
-        // Pass all visits so doctor can pick which
-        // visit this sick leave belongs to
+    public String newSickLeaveForm(
+            @AuthenticationPrincipal User currentUser,
+            Model model) {
+
+        if (currentUser.getRole().name().equals("ADMIN")) {
+            //админа вижда вс посещ
+            model.addAttribute("visits",
+                    visitService.getAllVisits());
+        } else {
+            //лекар вижда само своите посещ
+            model.addAttribute("visits",
+                    visitService.getVisitsByDoctor(
+                            currentUser.getDoctor().getId()));
+        }
         return "sick-leaves/form";
     }
 
@@ -66,11 +73,20 @@ public class SickLeaveWebController {
 
     @GetMapping("/{id}/edit")
     public String editSickLeaveForm(
-            @PathVariable Long id, Model model) {
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser,
+            Model model) {
         model.addAttribute("sickLeave",
                 sickLeaveService.getSickLeaveById(id));
-        model.addAttribute("visits",
-                visitService.getAllVisits());
+
+        if (currentUser.getRole().name().equals("ADMIN")) {
+            model.addAttribute("visits",
+                    visitService.getAllVisits());
+        } else {
+            model.addAttribute("visits",
+                    visitService.getVisitsByDoctor(
+                            currentUser.getDoctor().getId()));
+        }
         model.addAttribute("id", id);
         return "sick-leaves/form";
     }

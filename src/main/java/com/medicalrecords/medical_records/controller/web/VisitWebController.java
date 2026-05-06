@@ -35,9 +35,8 @@ public class VisitWebController {
             visits = visitService.getAllVisits();
             //админът вижда вс посещ
         } else if (currentUser.getRole().name().equals("DOCTOR")) {
-            visits = visitService.getVisitsByDoctor(
-                    currentUser.getDoctor().getId());
-            //лекарят вижда само своите посещ
+            visits = visitService.getAllVisits();
+            //лекаря вижда всички посещ но редактира само свои
         } else {
             visits = visitService.getVisitsByPatient(
                     currentUser.getPatient().getId());
