@@ -34,8 +34,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
-            // Let the request continue without authentication
-            // SecurityConfig will decide if this endpoint needs auth
+            //оставям requestа да продължи без автентикация
+            //securityconfig ще реши дали този еднпойнт се нуждае от автентикация
         }
 
         final String jwt = authHeader.substring(7);

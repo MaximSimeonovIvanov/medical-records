@@ -19,7 +19,7 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     private String secretKey;
-    //от application.properties
+    //чете от application.properties
     //value инжектва конфиг стойности директно в полетата
 
     @Value("${jwt.expiration}")

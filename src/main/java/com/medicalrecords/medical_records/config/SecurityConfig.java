@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.SecurityFilterChain; //това си е Bean към Spring
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -38,11 +38,11 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/register",
                                 "/css/**", "/js/**", "/images/**").permitAll()
 
-                        //рест апи ендпойнтс-jwt auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/**").authenticated()
+                        //рест апи ендпойнти-jwt auth
+                        .requestMatchers("/api/auth/**").permitAll() //логин и реистрация са публик
+                        .requestMatchers("/api/**").authenticated()  //вс други иска автентикация
 
-                        //thymleaf pages-session auth
+                        //web/thymleaf endpoints-session auth and cookies
                         .requestMatchers("/doctors/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                         .requestMatchers("/patients/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                         .requestMatchers("/visits/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
@@ -69,15 +69,18 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
+                        .invalidateHttpSession(true) //iztrivam sesiqta ot pametta, cookie becomes worthless
+                        .clearAuthentication(true) //изчиствам security context
                         .permitAll()
                 )
 
-                //pazq jwt filter za rest api
+                //регистрира daoauthenticationprovider
+                //спринг секюрити го ползва при автентикация
                 .authenticationProvider(authenticationProvider)
+                //pazq jwt filter za rest api
                 .addFilterBefore(jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class);
+                //jwt filter се изпълнява преди логин филтъра по подразбиране на Спринг
 
         return http.build();
     }
