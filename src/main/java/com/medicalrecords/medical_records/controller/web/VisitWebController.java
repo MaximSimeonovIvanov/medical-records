@@ -69,12 +69,14 @@ public class VisitWebController {
             @AuthenticationPrincipal User currentUser,
             Model model) {
         try {
-            //ако лекарят създ посещ автоматично си възлага посещението на себе си
             if (currentUser.getRole().name().equals("DOCTOR")) {
-                visitService.createVisitForDoctor(
+                //doctor creates visit - use their own id
+                visitService.createVisit(
                         request, currentUser.getDoctor().getId());
             } else {
-                visitService.createVisit(request, null);
+                //admin creates visit - use doctorId from form
+                visitService.createVisit(
+                        request, request.getDoctorId());
             }
             return "redirect:/visits";
         } catch (Exception e) {
@@ -85,6 +87,7 @@ public class VisitWebController {
                     diagnosisService.getAllDiagnoses());
             model.addAttribute("doctors",
                     doctorService.getAllDoctors());
+            model.addAttribute("currentUser", currentUser);
             return "visits/form";
         }
     }
@@ -92,7 +95,6 @@ public class VisitWebController {
     @GetMapping("/{id}/edit")
     public String editVisitForm(
             @PathVariable Long id,
-            @AuthenticationPrincipal User currentUser,
             Model model) {
         VisitResponse visit = visitService.getVisitById(id);
         model.addAttribute("visit", visit);
@@ -110,11 +112,9 @@ public class VisitWebController {
     public String updateVisit(
             @PathVariable Long id,
             @ModelAttribute CreateVisitRequest request,
-            @AuthenticationPrincipal User currentUser,
             Model model) {
         try {
-            visitService.updateVisit(id, request,
-                    currentUser.getUsername());
+            visitService.updateVisit(id, request);
             return "redirect:/visits";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());

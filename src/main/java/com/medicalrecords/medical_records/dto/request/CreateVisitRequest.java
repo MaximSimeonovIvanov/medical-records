@@ -16,6 +16,8 @@ public class CreateVisitRequest {
     @NotNull(message = "Patient is required")
     private Long patientId;
 
+    private Long doctorId;
+
     @NotNull(message = "Diagnosis is required")
     private Long diagnosisId;
 

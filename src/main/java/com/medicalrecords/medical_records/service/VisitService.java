@@ -66,60 +66,7 @@ public class VisitService {
     }
 
     @Transactional
-    public VisitResponse createVisit(CreateVisitRequest request, String username) {
-        // намира доктора автоматично по JWT token
-        Doctor doctor = doctorRepository.findAll()
-                .stream()
-                .filter(d -> d.getVisits() != null)
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
-
-        // сега намира лекар по връзката с пациент. todo: да измисля нещо по-добро
-        Patient patient = patientRepository.findById(request.getPatientId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Patient with id " + request.getPatientId() + " not found"));
-
-        Diagnosis diagnosis = diagnosisRepository.findById(request.getDiagnosisId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Diagnosis with id " + request.getDiagnosisId() + " not found"));
-
-        //ако пациента е застрахован, плаща НЗОК
-        boolean paidByNhif = patient.isHealthInsured();
-
-        Visit visit = Visit.builder()
-                .date(request.getDate())
-                .doctor(doctor)
-                .patient(patient)
-                .diagnosis(diagnosis)
-                .treatment(request.getTreatment())
-                .price(request.getPrice())
-                .paidByNhif(paidByNhif)
-                .build();
-
-        return mapper.toVisitResponse(visitRepository.save(visit));
-    }
-
-    @Transactional
-    public VisitResponse updateVisit(Long id, CreateVisitRequest request, String username) {
-        Visit visit = visitRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Visit with id " + id + " not found"));
-
-        // лекарите трябва да редактират само свои посещения
-        Diagnosis diagnosis = diagnosisRepository.findById(request.getDiagnosisId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Diagnosis with id " + request.getDiagnosisId() + " not found"));
-
-        visit.setDate(request.getDate());
-        visit.setDiagnosis(diagnosis);
-        visit.setTreatment(request.getTreatment());
-        visit.setPrice(request.getPrice());
-
-        return mapper.toVisitResponse(visitRepository.save(visit));
-    }
-
-    @Transactional
-    public VisitResponse createVisitForDoctor(
+    public VisitResponse createVisit(
             CreateVisitRequest request, Long doctorId) {
 
         Doctor doctor = doctorRepository.findById(doctorId)
@@ -145,6 +92,25 @@ public class VisitService {
                 .price(request.getPrice())
                 .paidByNhif(paidByNhif)
                 .build();
+
+        return mapper.toVisitResponse(visitRepository.save(visit));
+    }
+
+    @Transactional
+    public VisitResponse updateVisit(Long id, CreateVisitRequest request) {
+        Visit visit = visitRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Visit with id " + id + " not found"));
+
+        // лекарите трябва да редактират само свои посещения
+        Diagnosis diagnosis = diagnosisRepository.findById(request.getDiagnosisId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Diagnosis with id " + request.getDiagnosisId() + " not found"));
+
+        visit.setDate(request.getDate());
+        visit.setDiagnosis(diagnosis);
+        visit.setTreatment(request.getTreatment());
+        visit.setPrice(request.getPrice());
 
         return mapper.toVisitResponse(visitRepository.save(visit));
     }

@@ -1,6 +1,5 @@
 package com.medicalrecords.medical_records.controller.web;
 
-import com.medicalrecords.medical_records.entity.User;
 import com.medicalrecords.medical_records.repository.UserRepository;
 import com.medicalrecords.medical_records.repository.DoctorRepository;
 import com.medicalrecords.medical_records.repository.PatientRepository;
@@ -10,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin")

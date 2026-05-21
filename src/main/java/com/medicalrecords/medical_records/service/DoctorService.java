@@ -50,12 +50,8 @@ public class DoctorService {
     }
 
     public List<DoctorResponse> getAllGPs() {
-        List<Doctor> all = doctorRepository.findAll();
-        System.out.println("All doctors: " + all.size());
-        all.forEach(d -> System.out.println(
-                d.getName() + " isGp: " + d.isGp()));
-
-        return all.stream()
+        return doctorRepository.findAll()
+                .stream()
                 .filter(Doctor::isGp)
                 .map(mapper::toDoctorResponse)
                 .toList();

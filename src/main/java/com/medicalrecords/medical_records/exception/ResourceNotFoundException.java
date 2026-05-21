@@ -5,5 +5,5 @@ public class ResourceNotFoundException extends RuntimeException {
         super(message);
     }
 }
-// хвърля се когато не намираме нещо в БД
-// ще върне 404 като отговор
+//хвърля се когато не намира нещо в БД
+//връща 404 като отговор

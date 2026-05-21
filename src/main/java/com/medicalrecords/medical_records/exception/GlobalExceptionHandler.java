@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-//"прекъсни exception-ите хвърлени от всеки контролер и се справи с тях тук вместо това
-//тук е мястото където всички грешки са handled
+//РЕСТКОНТРОЛЕРАДВАЙС=следи вс контролери и ако някой exc. се изплъзне от контр. го прекъсни тук
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)

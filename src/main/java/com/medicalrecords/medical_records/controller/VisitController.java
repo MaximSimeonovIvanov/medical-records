@@ -59,15 +59,16 @@ public class VisitController {
             @Valid @RequestBody CreateVisitRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(visitService.createVisit(request, null));
-        //за сега не слагам потр име, тодо
+                .body(visitService.createVisit(
+                        request, request.getDoctorId()));
+        //pass doctorId from request
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<VisitResponse> updateVisit(
             @PathVariable Long id,
             @Valid @RequestBody CreateVisitRequest request) {
-        return ResponseEntity.ok(visitService.updateVisit(id, request, null));
+        return ResponseEntity.ok(visitService.updateVisit(id, request));
     }
 
     @DeleteMapping("/{id}")

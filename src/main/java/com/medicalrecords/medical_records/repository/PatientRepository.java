@@ -7,13 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
-
-    Optional<Patient> findByEgn(String egn);
-    // SELECT * FROM patients WHERE egn = ?
 
     boolean existsByEgn(String egn);
 
