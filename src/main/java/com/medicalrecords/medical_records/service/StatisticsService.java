@@ -16,7 +16,6 @@ public class StatisticsService {
     private final VisitRepository visitRepository;
     private final PatientRepository patientRepository;
     private final SickLeaveRepository sickLeaveRepository;
-    private final DiagnosisRepository diagnosisRepository;
     private final EntityMapper mapper;
 
     public List<PatientResponse> getPatientsByDiagnosis(Long diagnosisId) {
