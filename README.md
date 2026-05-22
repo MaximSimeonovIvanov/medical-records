@@ -1,5 +1,14 @@
 # 🏥 Electronic Medical Records System
 
+![Java](https://img.shields.io/badge/Java-21-orange?logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.14-brightgreen?logo=springboot)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6.5-brightgreen?logo=springsecurity)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql)
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.x-green?logo=thymeleaf)
+![JWT](https://img.shields.io/badge/JWT-0.12.6-black?logo=jsonwebtokens)
+![Maven](https://img.shields.io/badge/Maven-3.8+-red?logo=apachemaven)
+![License](https://img.shields.io/badge/License-Academic-lightgrey)
+
 A full-stack web application for managing electronic medical records, built with Spring Boot. The system supports three user roles — **Admin**, **Doctor**, and **Patient** — each with role-specific access to medical data.
 
 ---
@@ -10,6 +19,7 @@ A full-stack web application for managing electronic medical records, built with
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
+- [SOLID Principles](#solid-principles)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
@@ -113,6 +123,65 @@ The application follows a strict **4-layer architecture** (Separation of Concern
 - Services contain all business rules
 - Repositories only handle data access
 - DTOs separate internal entities from external API
+
+---
+
+## SOLID Principles
+
+The project consciously applies all five SOLID principles throughout the codebase.
+
+### ✅ Single Responsibility Principle (SRP)
+Every class has exactly one reason to change:
+
+```
+DoctorController   → only handles HTTP requests/responses for doctors
+DoctorService      → only contains doctor business rules
+DoctorRepository   → only handles doctor database operations
+EntityMapper       → only converts between entities and DTOs
+GlobalExceptionHandler → only handles exceptions from all controllers
+AdminSeeder        → only creates the initial admin account
+```
+
+### ✅ Open/Closed Principle (OCP)
+The system is open for extension, closed for modification:
+
+- New statistics can be added to `StatisticsService` without modifying existing methods
+- New roles can be added to the `Role` enum without changing security infrastructure
+- New exception types can be added to `GlobalExceptionHandler` without modifying existing handlers
+- New endpoints can be added to controllers without touching existing ones
+
+### ✅ Liskov Substitution Principle (LSP)
+Spring interfaces are used throughout — implementations are interchangeable:
+
+- `UserDetailsService` is implemented by `UserDetailsServiceImpl` — Spring Security only depends on the interface
+- `PasswordEncoder` is defined as a `@Bean` returning `BCryptPasswordEncoder` — any `PasswordEncoder` implementation could replace it
+- All repositories extend `JpaRepository` — Spring generates the implementation at runtime
+
+### ✅ Interface Segregation Principle (ISP)
+Spring Data JPA repositories define only the methods they need:
+
+```java
+// DoctorRepository only exposes what's needed for doctors:
+boolean existsByUin(String uin);
+// Not bloated with unrelated methods
+
+// UserRepository only exposes what's needed for users:
+Optional<User> findByUsername(String username);
+boolean existsByUsername(String username);
+```
+
+### ✅ Dependency Inversion Principle (DIP)
+High-level modules depend on abstractions, not concrete implementations:
+
+```java
+// DoctorService depends on abstractions — not concrete classes:
+private final DoctorRepository doctorRepository;    // interface
+private final UserRepository userRepository;         // interface
+private final PasswordEncoder passwordEncoder;       // interface
+// Spring injects the concrete implementations at runtime
+```
+
+Constructor injection is used throughout via `@RequiredArgsConstructor` — dependencies are never instantiated with `new` inside classes. The IoC container manages all object creation and wiring.
 
 ---
 
@@ -647,7 +716,10 @@ if (currentUser.getRole() == DOCTOR) {
 
 ---
 
-## Author
+## 👤 Author & Contact
 
-**Maxim Simeonov Ivanov**
-GitHub: [@MaximSimeonovIvanov](https://github.com/MaximSimeonovIvanov)
+**Maxim Simeonov Ivanov** — Java Developer
+
+- maksimivanov@tutamail.com
+
+This project was developed as part of university coursework in **CSCB869 Java Web Services**, demonstrating modern Java development practices, Spring Framework expertise, clean code principles, layered architecture, and security best practices.
