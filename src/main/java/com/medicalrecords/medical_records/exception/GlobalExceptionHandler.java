@@ -53,7 +53,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationErrors(
             MethodArgumentNotValidException ex) {
-        //this handles @valid failures on dtos
         //събира всички валидационни грешки в една такава
         String message = ex.getBindingResult()
                 .getFieldErrors()
